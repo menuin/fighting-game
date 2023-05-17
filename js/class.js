@@ -1,5 +1,11 @@
 class Sprite {
-  constructor({ position, img, scale = 1, framesMax = 1 }) {
+  constructor({
+    position,
+    img,
+    scale = 1,
+    framesMax = 1,
+    framesPadding = { x: 0, y: 0 },
+  }) {
     this.position = position;
     this.height = 150;
     this.width = 50;
@@ -11,6 +17,7 @@ class Sprite {
     this.framesCurrent = 0; // current animation frame
     this.framesElapsed = 0; // how many frames(blinks) elapsed during whole animation
     this.framesHold = 10; // changes to next animation frame after 10 frames(blinks)
+    this.framesPadding = framesPadding; // inner paddings in each animation frame (refer to the difference b/w samuraiMack and shop.png)
   }
 
   draw() {
@@ -20,15 +27,13 @@ class Sprite {
       0,
       this.image.width / this.framesMax,
       this.image.height, // crop position ends here
-      this.position.x, // x position
-      this.position.y, // y position
+      this.position.x - this.framesPadding.x, // x position: ;
+      this.position.y - this.framesPadding.y, // y position: ;
       (this.image.width / this.framesMax) * this.scale, // width: ;
       this.image.height * this.scale // height: ;
     ); // draw image on canvas
   }
-
-  update() {
-    this.draw();
+  animateFrames() {
     this.framesElapsed++;
     if (this.framesElapsed % this.framesHold === 0) {
       if (this.framesCurrent < this.framesMax - 1) {
@@ -38,11 +43,35 @@ class Sprite {
       }
     }
   }
+  update() {
+    this.draw();
+    this.animateFrames();
+  }
 }
 
-class Fighter {
-  constructor({ position, velocity, color = "red", offset }) {
-    this.position = position;
+class Fighter extends Sprite {
+  constructor({
+    position,
+    velocity,
+    color = "red",
+    offset,
+    img,
+    scale = 1,
+    framesMax = 1,
+    framesPadding,
+  }) {
+    super({
+      // inherits parent class
+      position,
+      img,
+      scale,
+      framesMax,
+      framesPadding,
+    });
+    this.framesCurrent = 0;
+    this.framesElapsed = 0;
+    this.framesHold = 10;
+
     this.velocity = velocity;
     this.height = 150;
     this.width = 50;
@@ -52,7 +81,7 @@ class Fighter {
         x: this.position.x,
         y: this.position.y,
       },
-      offset,
+      offset, // attackBox (should face leftward) offset var for player 2
       width: 100,
       height: 50,
     };
@@ -61,22 +90,9 @@ class Fighter {
     this.health = 100;
   }
 
-  draw() {
-    c.fillStyle = this.color; // write fillStyle befor fillRect in order to fill the rectangle with color
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
-    if (this.isAttacking) {
-      c.fillStyle = "green";
-      c.fillRect(
-        this.position.x + this.attackBox.offset.x,
-        this.position.y,
-        this.attackBox.width,
-        this.attackBox.height
-      );
-    }
-  }
-
   update() {
     this.draw();
+    this.animateFrames();
     this.attackBox.position.x = this.position.x + this.attackBox.offset.x; // this is necessary because the attack box position should be updated after being drawn
     this.attackBox.position.y = this.position.y;
 

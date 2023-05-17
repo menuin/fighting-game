@@ -40,6 +40,13 @@ const player1 = new Fighter({
     x: 0,
     y: 0,
   },
+  img: "./img/samuraiMack/Idle.png",
+  framesMax: 8,
+  scale: 2.5,
+  framesPadding: {
+    x: 215,
+    y: 153,
+  },
 });
 
 // create player 2 object
@@ -85,7 +92,7 @@ function animate() {
   background.update();
   shop.update();
   player1.update();
-  player2.update();
+  // player2.update();
   // clear canvas & update() method called in every frame
 
   player1.velocity.x = 0;
