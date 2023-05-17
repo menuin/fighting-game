@@ -19,10 +19,12 @@ const background = new Sprite({
 // create shop
 const shop = new Sprite({
   position: {
-    x: 0,
-    y: 0,
+    x: 620,
+    y: 160,
   },
   img: "./img/shop.png",
+  scale: 2.5,
+  framesMax: 6,
 });
 // create player 1 object
 const player1 = new Fighter({
