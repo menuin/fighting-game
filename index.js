@@ -36,10 +36,11 @@ const player1 = new Fighter({
     x: 0,
     y: 0,
   },
-  offset: {
-    x: 0,
-    y: 0,
-  },
+  // offset: {
+  //   // offset for player1's attackbox
+  //   x: 0,
+  //   y: 0,
+  // },
   img: "./img/samuraiMack/Idle.png", // img in basic(idle) status
   framesMax: 8,
   scale: 2.5,
@@ -64,6 +65,26 @@ const player1 = new Fighter({
       img: "./img/samuraiMack/Fall.png",
       framesMax: 2,
     },
+    attack1: {
+      img: "./img/samuraiMack/Attack1.png",
+      framesMax: 6,
+    },
+    takeHit: {
+      img: "./img/samuraiMack/Take Hit - white silhouette.png",
+      framesMax: 4,
+    },
+    death: {
+      img: "./img/samuraiMack/Death.png",
+      framesMax: 6,
+    },
+  },
+  attackBox: {
+    offset: {
+      x: 100,
+      y: 50,
+    },
+    width: 140,
+    height: 50,
   },
 });
 
@@ -78,10 +99,55 @@ const player2 = new Fighter({
     y: 0,
   },
   color: "blue",
-  offset: {
-    // offset for player2's attackbox
-    x: -50,
-    y: 0,
+  // offset: {
+  //   // offset for player2's attackbox
+  //   x: -50,
+  //   y: 0,
+  // },
+  img: "./img/kenji/Idle.png", // img in basic(idle) status
+  framesMax: 4,
+  scale: 2.5,
+  framesPadding: {
+    x: 215,
+    y: 167,
+  },
+  sprites: {
+    idle: {
+      img: "./img/kenji/Idle.png",
+      framesMax: 4,
+    },
+    run: {
+      img: "./img/kenji/Run.png",
+      framesMax: 8,
+    },
+    jump: {
+      img: "./img/kenji/Jump.png",
+      framesMax: 2,
+    },
+    fall: {
+      img: "./img/kenji/Fall.png",
+      framesMax: 2,
+    },
+    attack1: {
+      img: "./img/kenji/Attack1.png",
+      framesMax: 4,
+    },
+    takeHit: {
+      img: "./img/kenji/Take hit.png",
+      framesMax: 3,
+    },
+    death: {
+      img: "./img/kenji/Death.png",
+      framesMax: 7,
+    },
+  },
+  attackBox: {
+    offset: {
+      x: -170,
+      y: 50,
+    },
+    width: 140,
+    height: 50,
   },
 });
 
@@ -110,13 +176,13 @@ function animate() {
   background.update();
   shop.update();
   player1.update();
-  // player2.update();
+  player2.update();
   // clear canvas & update() method called in every frame
 
   player1.velocity.x = 0;
   player2.velocity.x = 0;
 
-  // player movement
+  // player1 movement
   if (keys.a.pressed && player1.lastKey === "a") {
     // moving backwards
     player1.velocity.x = -5;
@@ -126,7 +192,7 @@ function animate() {
     player1.velocity.x = 5;
     player1.switchSprite("run");
   } else {
-    player1.switchSprite("idle");
+    player1.switchSprite("idle"); // default state
   }
   if (player1.velocity.y < 0) {
     // jumping
@@ -138,9 +204,22 @@ function animate() {
 
   // player2 movement
   if (keys.ArrowLeft.pressed && player2.lastKey === "ArrowLeft") {
+    // moving backwards
     player2.velocity.x = -5;
+    player2.switchSprite("run");
   } else if (keys.ArrowRight.pressed && player2.lastKey === "ArrowRight") {
+    // moving forward
     player2.velocity.x = 5;
+    player2.switchSprite("run");
+  } else {
+    player2.switchSprite("idle");
+  }
+  if (player2.velocity.y < 0) {
+    // jumping
+    player2.switchSprite("jump");
+  } else if (player2.velocity.y > 0) {
+    // falling
+    player2.switchSprite("fall");
   }
 
   // player 1 attacks
@@ -149,10 +228,15 @@ function animate() {
       attacker: player1,
       victim: player2,
     }) &&
-    player1.isAttacking
+    player1.isAttacking &&
+    player1.framesCurrent === 4 // to synchronize player1's animation with damage
   ) {
-    player2.health -= 10;
+    player2.takeHit();
     document.querySelector("#player2Health").style.width = player2.health + "%";
+    player1.isAttacking = false;
+  }
+  // if player1 misses
+  if (player1.isAttacking && player1.framesCurrent === 4) {
     player1.isAttacking = false;
   }
 
@@ -162,13 +246,19 @@ function animate() {
       attacker: player2,
       victim: player1,
     }) &&
-    player2.isAttacking
+    player2.isAttacking &&
+    player2.framesCurrent === 1 // to synchronize player2's animation
   ) {
-    player1.health -= 10;
+    player1.takeHit();
     document.querySelector("#playerHealth").style.width = player1.health + "%";
     player2.isAttacking = false;
   }
+  // if player2 misses
+  if (player2.isAttacking && player2.framesCurrent === 1) {
+    player2.isAttacking = false;
+  }
 
+  // player dies
   if (player1.health <= 0 || player2.health <= 0) {
     determineWinner({ player1, player2, timerId });
   }
@@ -177,38 +267,43 @@ function animate() {
 animate();
 
 window.addEventListener("keydown", (event) => {
-  switch (event.key) {
-    // player1 keys
-    case "d":
-      keys.d.pressed = true;
-      player1.lastKey = "d";
-      break;
-    case "a":
-      keys.a.pressed = true;
-      player1.lastKey = "a";
-      break;
-    case "w":
-      player1.velocity.y = -15;
-      break;
-    case "s":
-      player1.attack();
-      break;
-
-    // player2 keys
-    case "ArrowRight":
-      keys.ArrowRight.pressed = true;
-      player2.lastKey = "ArrowRight";
-      break;
-    case "ArrowLeft":
-      keys.ArrowLeft.pressed = true;
-      player2.lastKey = "ArrowLeft";
-      break;
-    case "ArrowUp":
-      player2.velocity.y = -15;
-      break;
-    case "ArrowDown":
-      player2.attack();
-      break;
+  if (!player1.dead) {
+    switch (event.key) {
+      // player1 keys
+      case "d":
+        keys.d.pressed = true;
+        player1.lastKey = "d";
+        break;
+      case "a":
+        keys.a.pressed = true;
+        player1.lastKey = "a";
+        break;
+      case "w":
+        player1.velocity.y = -15;
+        break;
+      case "s":
+        player1.attack();
+        break;
+    }
+  }
+  if (!player2.dead) {
+    switch (event.key) {
+      // player2 keys
+      case "ArrowRight":
+        keys.ArrowRight.pressed = true;
+        player2.lastKey = "ArrowRight";
+        break;
+      case "ArrowLeft":
+        keys.ArrowLeft.pressed = true;
+        player2.lastKey = "ArrowLeft";
+        break;
+      case "ArrowUp":
+        player2.velocity.y = -15;
+        break;
+      case "ArrowDown":
+        player2.attack();
+        break;
+    }
   }
 });
 
