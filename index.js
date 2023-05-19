@@ -175,6 +175,8 @@ function animate() {
   c.fillRect(0, 0, canvas.width, canvas.height);
   background.update();
   shop.update();
+  c.fillStyle = "rgba(255,255,255,0.1)";
+  c.fillRect(0, 0, canvas.width, canvas.height);
   player1.update();
   player2.update();
   // clear canvas & update() method called in every frame
@@ -185,11 +187,16 @@ function animate() {
   // player1 movement
   if (keys.a.pressed && player1.lastKey === "a") {
     // moving backwards
-    player1.velocity.x = -5;
+    if (player1.position.x >= 0) {
+      player1.velocity.x = -5;
+    }
     player1.switchSprite("run");
   } else if (keys.d.pressed && player1.lastKey === "d") {
     // moving forward
-    player1.velocity.x = 5;
+    if (player1.position.x + player1.width <= canvas.width) {
+      player1.velocity.x = 5;
+    }
+
     player1.switchSprite("run");
   } else {
     player1.switchSprite("idle"); // default state
@@ -205,11 +212,15 @@ function animate() {
   // player2 movement
   if (keys.ArrowLeft.pressed && player2.lastKey === "ArrowLeft") {
     // moving backwards
-    player2.velocity.x = -5;
+    if (player2.position.x >= 0) {
+      player2.velocity.x = -5;
+    }
     player2.switchSprite("run");
   } else if (keys.ArrowRight.pressed && player2.lastKey === "ArrowRight") {
     // moving forward
-    player2.velocity.x = 5;
+    if (player2.position.x + player2.width <= canvas.width) {
+      player2.velocity.x = 5;
+    }
     player2.switchSprite("run");
   } else {
     player2.switchSprite("idle");
@@ -232,7 +243,11 @@ function animate() {
     player1.framesCurrent === 4 // to synchronize player1's animation with damage
   ) {
     player2.takeHit();
-    document.querySelector("#player2Health").style.width = player2.health + "%";
+    // document.querySelector("#player2Health").style.width = player2.health + "%";
+    gsap.to("#player2Health", {
+      // using gsap to animate
+      width: player2.health + "%",
+    });
     player1.isAttacking = false;
   }
   // if player1 misses
@@ -250,7 +265,11 @@ function animate() {
     player2.framesCurrent === 1 // to synchronize player2's animation
   ) {
     player1.takeHit();
-    document.querySelector("#playerHealth").style.width = player1.health + "%";
+    // document.querySelector("#playerHealth").style.width = player1.health + "%";
+    gsap.to("#playerHealth", {
+      // using gsap to animate
+      width: player1.health + "%",
+    });
     player2.isAttacking = false;
   }
   // if player2 misses

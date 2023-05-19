@@ -1,8 +1,15 @@
 <head>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
   <style>
     * {
       /* prevents adding padding from messing up overal width */
       box-sizing: border-box;
+      font-family: "Press Start 2P", cursive;
     }
   </style>
 </head>
@@ -25,18 +32,27 @@
           width: 100%;
           display: flex;
           justify-content: flex-end;
+          opacity: 0.5;
         "
       >
-        <div style="background-color: yellow; height: 30px; width: 100%"></div>
+        <div
+          style="
+            background-color: white;
+            height: 30px;
+            width: 100%;
+            border-radius: 10px 0px 0px 10px;
+          "
+        ></div>
         <div
           id="playerHealth"
           style="
             position: absolute;
-            background: red;
+            background: #cd2929;
             top: 0;
             right: 0;
             bottom: 0;
             width: 100%;
+            border-radius: 10px 0px 0px 10px;
           "
         ></div>
       </div>
@@ -44,29 +60,38 @@
       <div
         id="timer"
         style="
-          background-color: yellow;
+          background-color: white;
           width: 100px;
-          height: 100px;
+          height: 60px;
           flex-shrink: 0;
           display: flex;
           align-items: center;
           justify-content: center;
+          font-size: 25px;
+          border: 5px solid black;
         "
       >
         10
       </div>
       <!-- PLAYER 2 HEALTH -->
-      <div style="position: relative; height: 30px; width: 100%">
-        <div style="background-color: yellow; height: 30px"></div>
+      <div style="position: relative; height: 30px; width: 100%; opacity: 0.5">
+        <div
+          style="
+            background-color: white;
+            height: 30px;
+            border-radius: 0px 10px 10px 0px;
+          "
+        ></div>
         <div
           id="player2Health"
           style="
             position: absolute;
-            background: red;
+            background: #5d1e82;
             top: 0;
             right: 0;
             bottom: 0;
             left: 0;
+            border-radius: 0px 10px 10px 0px;
           "
         ></div>
       </div>
@@ -87,7 +112,12 @@
     ></div>
     <canvas></canvas>
   </div>
-  </div>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.5/gsap.min.js"
+    integrity="sha512-cOH8ndwGgPo+K7pTvMrqYbmI8u8k6Sho3js0gOqVWTmQMlLIi6TbqGWRTpf1ga8ci9H3iPsvDLr4X7xwhC/+DQ=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  ></script>
   <script src="js/utils.js"></script>
   <script src="js/class.js"></script>
   <script src="index.js"></script>

@@ -117,6 +117,9 @@ class Fighter extends Sprite {
     // player movement
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
+    if (this.position.y + this.velocity.y <= 0) {
+      this.velocity.y = 0;
+    }
     if (this.position.y + this.height + this.velocity.y >= canvas.height - 96) {
       // when object hits the ground
       this.velocity.y = 0;
